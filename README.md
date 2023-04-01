@@ -10,7 +10,7 @@ _SwiftTextFieldPreset_ is part of the [OpenAlloc](https://github.com/openalloc) 
 
 Text Field | Presets Picker
 :---:|:---:
-![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/TextField.png)  |  ![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/PresetsPicker.png.png)
+![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/TextField.png)  |  ![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/PresetsPicker.png)
 
 * Builds on existing `TextField` component
 * Presently targeting .macOS(.v13), .iOS(.v16), .watchOS(.v9)
