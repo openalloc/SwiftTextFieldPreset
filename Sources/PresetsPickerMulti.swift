@@ -62,8 +62,10 @@ import SwiftUI
             .environment(\.editMode, .constant(.active))
             #endif
             .toolbar {
-                Button(action: selectAllAction) { Text("Select All") }
-                Button(action: clearAction) { Text("Clear All") }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button(action: selectAllAction) { Text("Select All") }
+                    Button(action: clearAction) { Text("Clear All") }
+                }
             }
         }
 
