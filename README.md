@@ -8,9 +8,29 @@ _SwiftTextFieldPreset_ is part of the [OpenAlloc](https://github.com/openalloc) 
 
 ## Features
 
+Text Field | Presets Picker
+:---:|:---:
+![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/TextField.png)  |  ![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/PresetsPicker.png.png)
+
 * Builds on existing `TextField` component
 * Presently targeting .macOS(.v13), .iOS(.v16), .watchOS(.v9)
 * Only Apple's _Collections_ as an external dependency
+
+## Installation
+
+In your `Package.swift`:
+
+To package `.dependencies` add
+
+```swift
+.package(url: "https://github.com/openalloc/SwiftTextFieldPreset.git", .upToNextMajor(from: "1.1.2")),
+```
+
+To product `.dependencies` add
+
+```swift
+.product(name: "TextFieldPreset", package: "SwiftTextFieldPreset"),
+```
 
 ## Example
 
@@ -45,7 +65,7 @@ struct MyView: View {
 }
 ```
 
-Note that presets can be more than `String`, such as `struct`s with additional values that can be assigned via the `onSelect` callback.
+Note that presets can be more than `String`, such as `struct`s with additional values that can used to populate your target value/object via the `onSelect` callback.
 
 ## TODO
 

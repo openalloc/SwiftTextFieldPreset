@@ -1,5 +1,5 @@
 //
-//  PresetsPickerSingle.swift
+//  PresetsPicker.swift
 //
 // Copyright 2023 OpenAlloc LLC
 //
@@ -20,70 +20,33 @@ import Collections
 import os
 import SwiftUI
 
-public struct PresetsPickerSingle<Key, PresettedItem, Label>: View
+struct PresetsPicker<Key, PresettedItem, Label>: View
     where Key: Hashable & CustomStringConvertible,
     PresettedItem: PresettableItem,
     Label: View
 {
-    public typealias PresetsDictionary = OrderedDictionary<Key, [PresettedItem]>
+    typealias PresetsDictionary = OrderedDictionary<Key, [PresettedItem]>
 
     // MARK: - Parameters
 
-    private let presets: PresetsDictionary
-    private let onSelect: (PresettedItem) -> Void
-    private let label: (PresettedItem) -> Label
-
-    public init(presets: PresetsDictionary,
-                onSelect: @escaping (PresettedItem) -> Void,
-                label: @escaping (PresettedItem) -> Label)
-    {
-        self.onSelect = onSelect
-        self.presets = presets
-        self.label = label
-    }
-
-    // MARK: - Locals
-
-    @State private var selected: PresettedItem?
+    let presets: PresetsDictionary
+    let onSelect: (PresettedItem) -> Void
+    let label: (PresettedItem) -> Label
 
     // MARK: - Views
 
-    public var body: some View {
-        platformView {
+    var body: some View {
+        List {
             ForEach(presets.elements, id: \.key) { element in
                 Section(header: Text(element.key.description)) {
                     ForEach(element.value, id: \.self) { item in
-                        label(item)
-                        #if os(watchOS)
-                            .onTapGesture {
-                                selected = item
-                            }
-                        #endif
+                        Button(action: { onSelect(item) },
+                               label: { label(item) })
                     }
                 }
             }
         }
-        .onChange(of: selected) { val in
-            guard let val else { return }
-            onSelect(val)
-        }
     }
-
-    #if os(watchOS)
-        private func platformView(content: () -> some View) -> some View {
-            List {
-                content()
-            }
-        }
-    #endif
-
-    #if !os(watchOS)
-        private func platformView(content: () -> some View) -> some View {
-            List(selection: $selected) {
-                content()
-            }
-        }
-    #endif
 }
 
 struct PresetsPickerSingle_Previews: PreviewProvider {
@@ -105,7 +68,7 @@ struct PresetsPickerSingle_Previews: PreviewProvider {
         @State var selected: String?
         var body: some View {
             NavigationStack {
-                PresetsPickerSingle(presets: presets) { _ in
+                PresetsPicker(presets: presets) { _ in
 
                 } label: {
                     Text($0.text)

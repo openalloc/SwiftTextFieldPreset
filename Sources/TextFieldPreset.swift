@@ -66,18 +66,16 @@ public struct TextFieldPreset<ButtonLabel, GroupKey, PresettedItem, PickerLabel>
             TextField(text: $text,
                       prompt: Text(prompt),
                       axis: axis) { EmptyView() }
-//            #if os(iOS)
-//                .lineLimit(5)
-//            #endif
 
-            Button(action: { isPresented = true }, label: buttonLabel)
+            Button(action: { isPresented = true },
+                   label: buttonLabel)
                 .buttonStyle(.borderless)
         }
         .sheet(isPresented: $isPresented) {
             NavigationStack {
-                PresetsPickerSingle(presets: presets,
-                                    onSelect: selectAction,
-                                    label: pickerLabel)
+                PresetsPicker(presets: presets,
+                              onSelect: selectAction,
+                              label: pickerLabel)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Cancel") { isPresented = false }
@@ -110,9 +108,11 @@ struct TextFieldWithPresets_Previews: PreviewProvider {
         @State var name: String = "New Exercise"
         var body: some View {
             Form {
-                TextFieldPreset($name, prompt: "Enter name", axis: .vertical, presets: presets, pickerLabel: {
-                    Text($0.description)
-                })
+                Section("TextField with Preset") {
+                    TextFieldPreset($name, prompt: "Enter name", axis: .vertical, presets: presets, pickerLabel: {
+                        Text($0.description)
+                    })
+                }
             }
             .padding()
         }
@@ -120,6 +120,6 @@ struct TextFieldWithPresets_Previews: PreviewProvider {
 
     static var previews: some View {
         TestHolder()
-            .accentColor(.orange)
+            //.accentColor(.orange)
     }
 }
