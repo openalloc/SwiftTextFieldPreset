@@ -1,5 +1,5 @@
 //
-//  PresetsPicker.swift
+//  PresetsPickerSingle.swift
 //
 // Copyright 2023 OpenAlloc LLC
 //
@@ -20,58 +20,73 @@ import Collections
 import os
 import SwiftUI
 
-struct PresetsPicker<Key, PresettedItem, Label>: View
+public struct PresetsPickerSingle<Key, PresettedItem, Label>: View
     where Key: Hashable & CustomStringConvertible,
     PresettedItem: PresettableItem,
     Label: View
 {
-    typealias PresetsDictionary = OrderedDictionary<Key, [PresettedItem]>
-    typealias OnSelect = (Key, PresettedItem) -> Void
+    public typealias PresetsDictionary = OrderedDictionary<Key, [PresettedItem]>
 
     // MARK: - Parameters
 
     private let presets: PresetsDictionary
-    @Binding private var showPresets: Bool
-    private let onSelect: OnSelect
+    private let onSelect: (PresettedItem) -> Void
     private let label: (PresettedItem) -> Label
 
-    init(presets: PresetsPicker.PresetsDictionary,
-         showPresets: Binding<Bool>,
-         onSelect: @escaping OnSelect,
-         @ViewBuilder label: @escaping (PresettedItem) -> Label)
+    public init(presets: PresetsDictionary,
+                onSelect: @escaping (PresettedItem) -> Void,
+                label: @escaping (PresettedItem) -> Label)
     {
-        self.presets = presets
-        _showPresets = showPresets
         self.onSelect = onSelect
+        self.presets = presets
         self.label = label
     }
 
+    // MARK: - Locals
+
+    @State private var selected: PresettedItem?
+
     // MARK: - Views
 
-    var body: some View {
-        List {
-            ForEach(presets.keys, id: \.self) { key in // .sorted(by: <)
-                Section(header: Text(key.description)) {
-                    ForEach(presets[key]!, id: \.self) { value in // .sorted(by: <)
-                        Button {
-                            onSelect(key, value)
-                            showPresets = false
-                        } label: {
-                            label(value)
-                        }
+    public var body: some View {
+        platformView {
+            ForEach(presets.elements, id: \.key) { element in
+                Section(header: Text(element.key.description)) {
+                    ForEach(element.value, id: \.self) { item in
+                        label(item)
+                        #if os(watchOS)
+                            .onTapGesture {
+                                selected = item
+                            }
+                        #endif
                     }
                 }
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { showPresets = false }
-            }
+        .onChange(of: selected) { val in
+            guard let val else { return }
+            onSelect(val)
         }
     }
+
+    #if os(watchOS)
+        private func platformView(content: () -> some View) -> some View {
+            List {
+                content()
+            }
+        }
+    #endif
+
+    #if !os(watchOS)
+        private func platformView(content: () -> some View) -> some View {
+            List(selection: $selected) {
+                content()
+            }
+        }
+    #endif
 }
 
-struct PresetsPicker_Previews: PreviewProvider {
+struct PresetsPickerSingle_Previews: PreviewProvider {
     struct TestHolder: View {
         let presets: OrderedDictionary = [
             "Machine/Free Weights": [
@@ -87,10 +102,11 @@ struct PresetsPicker_Previews: PreviewProvider {
         ]
 
         @State var showPresets = false
+        @State var selected: String?
         var body: some View {
             NavigationStack {
-                PresetsPicker(presets: presets, showPresets: $showPresets) {
-                    print("\(#function): Selected \($0) \($1)")
+                PresetsPickerSingle(presets: presets) { _ in
+
                 } label: {
                     Text($0.text)
                 }

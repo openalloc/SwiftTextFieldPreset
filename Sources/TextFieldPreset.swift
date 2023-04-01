@@ -35,7 +35,7 @@ public struct TextFieldPreset<ButtonLabel, GroupKey, PresettedItem, PickerLabel>
     private let presets: PresetsDictionary
     private let buttonLabel: () -> ButtonLabel
     private let pickerLabel: (PresettedItem) -> PickerLabel
-    private let onSelect: (GroupKey, PresettedItem) -> Void
+    private let onSelect: (PresettedItem) -> Void
 
     public init(_ text: Binding<String>,
                 prompt: String,
@@ -43,7 +43,7 @@ public struct TextFieldPreset<ButtonLabel, GroupKey, PresettedItem, PickerLabel>
                 presets: PresetsDictionary,
                 @ViewBuilder buttonLabel: @escaping () -> ButtonLabel = { PresetButtonLabel() },
                 @ViewBuilder pickerLabel: @escaping (PresettedItem) -> PickerLabel,
-                onSelect: @escaping (GroupKey, PresettedItem) -> Void = { _, _ in })
+                onSelect: @escaping (PresettedItem) -> Void = { _ in })
     {
         _text = text
         self.prompt = prompt
@@ -56,7 +56,8 @@ public struct TextFieldPreset<ButtonLabel, GroupKey, PresettedItem, PickerLabel>
 
     // MARK: - Locals
 
-    @State private var showPresetNames = false
+    @State private var isPresented = false
+    @State private var selected: PresettedItem?
 
     // MARK: - Views
 
@@ -69,23 +70,28 @@ public struct TextFieldPreset<ButtonLabel, GroupKey, PresettedItem, PickerLabel>
 //                .lineLimit(5)
 //            #endif
 
-            Button(action: { showPresetNames = true }, label: buttonLabel)
+            Button(action: { isPresented = true }, label: buttonLabel)
                 .buttonStyle(.borderless)
         }
-        .sheet(isPresented: $showPresetNames) {
+        .sheet(isPresented: $isPresented) {
             NavigationStack {
-                PresetsPicker(presets: presets,
-                              showPresets: $showPresetNames,
-                              onSelect: { groupKey, presetValue in
-                                  // set the hard-coded name from the preset
-                                  text = presetValue.text
-                                  // allow caller to assign other fields
-                                  onSelect(groupKey, presetValue)
-                              },
-                              label: pickerLabel)
+                PresetsPickerSingle(presets: presets,
+                                    onSelect: selectAction,
+                                    label: pickerLabel)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { isPresented = false }
+                        }
+                    }
             }
             .interactiveDismissDisabled() // NOTE: needed to prevent home button from dismissing sheet
         }
+    }
+
+    private func selectAction(_ item: PresettedItem) {
+        isPresented = false
+        text = item.text
+        onSelect(item)
     }
 }
 
