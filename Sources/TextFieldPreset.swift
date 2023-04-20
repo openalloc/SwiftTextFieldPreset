@@ -120,6 +120,6 @@ struct TextFieldWithPresets_Previews: PreviewProvider {
 
     static var previews: some View {
         TestHolder()
-            //.accentColor(.orange)
+        // .accentColor(.orange)
     }
 }
