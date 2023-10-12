@@ -62,15 +62,19 @@ public struct TextFieldPreset<ButtonLabel, GroupKey, PresettedItem, PickerLabel>
     // MARK: - Views
 
     public var body: some View {
-        HStack {
-            TextField(text: $text,
-                      prompt: Text(prompt),
-                      axis: axis) { EmptyView() }
-
-            Button(action: { isPresented = true },
-                   label: buttonLabel)
-                .buttonStyle(.borderless)
-        }
+        TextField(text: $text,
+                  prompt: Text(prompt),
+                  axis: axis) { EmptyView() }
+            .overlay {
+                HStack {
+                    Spacer()
+                    buttonLabel()
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            isPresented = true
+                        }
+                }
+            }
         .sheet(isPresented: $isPresented) {
             NavigationStack {
                 PresetsPicker(presets: presets,
