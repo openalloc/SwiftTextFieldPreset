@@ -58,23 +58,36 @@ public struct TextFieldPreset<ButtonLabel, GroupKey, PresettedItem, PickerLabel>
 
     @State private var isPresented = false
     @State private var selected: PresettedItem?
-
+    
     // MARK: - Views
 
     public var body: some View {
-        TextField(text: $text,
-                  prompt: Text(prompt),
-                  axis: axis) { EmptyView() }
-            .overlay {
-                HStack {
-                    Spacer()
-                    buttonLabel()
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            isPresented = true
-                        }
-                }
+        Group {
+#if os(watchOS)
+            // NOTE: stack field/button for watch, as combining them via ZStack doesn't appear to work on watch hardware (though it worked on simulator for some reason!)
+            VStack {
+                TextField(text: $text,
+                          prompt: Text(prompt),
+                          axis: axis) { EmptyView() }
+                Button(action: { isPresented = true },
+                       label: buttonLabel)
+                .buttonStyle(.bordered)
             }
+#endif
+            
+#if !os(watchOS)
+            ZStack(alignment: .trailing) {
+                TextField(text: $text,
+                          prompt: Text(prompt),
+                          axis: axis) { EmptyView() }
+                buttonLabel()
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        isPresented = true
+                    }
+            }
+#endif
+        }
         .sheet(isPresented: $isPresented) {
             NavigationStack {
                 PresetsPicker(presets: presets,
@@ -113,9 +126,15 @@ struct TextFieldWithPresets_Previews: PreviewProvider {
         var body: some View {
             Form {
                 Section("TextField with Preset") {
-                    TextFieldPreset($name, prompt: "Enter name", axis: .vertical, presets: presets, pickerLabel: {
+                    TextFieldPreset($name, prompt: "Enter name", axis: .vertical, presets: presets,
+//                                    buttonLabel: {
+//                        Text("Foobar")
+//                    },
+                                    pickerLabel: {
                         Text($0.description)
                     })
+                    .accentColor(.orange)
+                    .padding(.vertical)
                 }
             }
             .padding()

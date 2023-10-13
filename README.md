@@ -8,13 +8,14 @@ _SwiftTextFieldPreset_ is part of the [OpenAlloc](https://github.com/openalloc) 
 
 ## Features
 
-Text Field | Presets Picker
-:---:|:---:
-![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/TextField.png)  |  ![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/PresetsPicker.png)
+iOS | watchOS | Presets Picker
+:---:|:---:|:---:
+![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/TextField.png)  |  ![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/WTextField.jpg)  |  ![](https://github.com/openalloc/SwiftTextFieldPreset/blob/main/Images/PresetsPicker.png)
 
 * Builds on existing `TextField` component
 * Presently targeting .macOS(.v13), .iOS(.v16), .watchOS(.v9)
 * Only Apple's _Collections_ as an external dependency
+* Note: with WatchOS 10, it seems to be no longer possible to integrate the presets button into the TextField. Now separated in a VStack.
 
 ## Installation
 
@@ -71,7 +72,6 @@ Note that presets can be more than `String`, such as `struct`s with additional v
 
 Please submit pull requests if you'd like to tackle any of these. Thanks!
 
-* Image in this README
 * Usage documentation in this README
 * See if earlier versions of platforms can be supported
 
